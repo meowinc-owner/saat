@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeensTruth — Teen Drug Facts</title>
+  <meta name="description" content="Real facts about teen substance use. Data sourced from Health Canada, CDC & Kids Help Phone.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { mono: ['"Courier New"', 'Courier', 'monospace'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Courier New", Courier, monospace; }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    .stagger > * { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .stagger.visible > *:nth-child(1) { opacity:1;transform:none;transition-delay:.05s }
+    .stagger.visible > *:nth-child(2) { opacity:1;transform:none;transition-delay:.15s }
+    .stagger.visible > *:nth-child(3) { opacity:1;transform:none;transition-delay:.25s }
+    .stagger.visible > *:nth-child(4) { opacity:1;transform:none;transition-delay:.35s }
+    .stagger.visible > *:nth-child(5) { opacity:1;transform:none;transition-delay:.45s }
+    .stagger.visible > *:nth-child(6) { opacity:1;transform:none;transition-delay:.55s }
+
+    /* ── Bar chart ── */
+    .bar-fill { width: 0; transition: width 1.3s cubic-bezier(.22,.61,.36,1); }
+    .bar-fill.go { width: var(--tw); }
+
+    /* ── Hatch ── */
+    .hatch { background-image: repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,.15) 3px,rgba(255,255,255,.15) 6px); }
+
+    /* ── Grid bg ── */
+    .gridbg { background-image: linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px); background-size:40px 40px; }
+
+    /* ── Stripe bg ── */
+    .stripebg { background-image: repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(255,255,255,.02) 5px,rgba(255,255,255,.02) 10px); }
+
+    /* ── Card hover ── */
+    .card-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default; }
+    .card-lift:hover { transform: translateY(-4px); }
+
+    /* ── Nav link active ── */
+    .nav-link.active { border-color: #000 !important; background: rgba(0,0,0,0.04); }
+
+    /* ── Mobile menu ── */
+    #mob-menu { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 0; }
+    #mob-menu.open { max-height: 500px; opacity: 1; }
+
+    /* ── Myth accordion ── */
+    .myth-body { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(.4,0,.2,1); }
+    .myth-body.open { max-height: 300px; }
+    .myth-chevron { transition: transform 0.35s ease; }
+    .myth-chevron.flip { transform: rotate(180deg); }
+
+    /* ── Bounce ── */
+    @keyframes bounce2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+    .bounce2 { animation: bounce2 2s ease-in-out infinite; }
+
+    /* ── Hero fade-up ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
+    .fade-up { animation: fadeUp 0.6s ease forwards; opacity: 0; }
+
+    /* ── Ripple ── */
+    @keyframes ripple { to { transform:scale(4); opacity:0; } }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:#f1f1f1} ::-webkit-scrollbar-thumb{background:#000;border-radius:3px}
+  </style>
+</head>
+<body class="bg-white text-black antialiased">
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 bg-white border-b-2 border-black transition-shadow duration-300" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
+
+    <a href="#hero" class="flex items-center gap-2 font-black text-black text-xs uppercase tracking-widest hover:opacity-70 transition-opacity">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/></svg>
+      Teen Drug Facts
+    </a>
+
+    <div class="hidden md:flex items-center gap-1">
+      <a href="#stats"    class="nav-link text-xs font-bold uppercase tracking-wider text-black px-3 py-1.5 border-2 border-transparent hover:border-black rounded transition-all duration-150">The Stats</a>
+      <a href="#risks"    class="nav-link text-xs font-bold uppercase tracking-wider text-black px-3 py-1.5 border-2 border-transparent hover:border-black rounded transition-all duration-150">The Risks</a>
+      <a href="#warnings" class="nav-link text-xs font-bold uppercase tracking-wider text-black px-3 py-1.5 border-2 border-transparent hover:border-black rounded transition-all duration-150">Warning Signs</a>
+      <a href="#myths"    class="nav-link text-xs font-bold uppercase tracking-wider text-black px-3 py-1.5 border-2 border-transparent hover:border-black rounded transition-all duration-150">Myth vs. Reality</a>
+      <a href="#sayno"    class="nav-link text-xs font-bold uppercase tracking-wider text-black px-3 py-1.5 border-2 border-transparent hover:border-black rounded transition-all duration-150">Say No</a>
+      <a href="#help"     class="nav-link text-xs font-bold uppercase tracking-wider text-black px-3 py-1.5 border-2 border-transparent hover:border-black rounded transition-all duration-150">Get Help</a>
+    </div>
+
+    <button id="hamburger" class="md:hidden p-1.5 border-2 border-black rounded hover:bg-black hover:text-white transition-colors" aria-label="Menu">
+      <svg id="icon-ham"   width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+      <svg id="icon-close" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Mobile dropdown -->
+  <div id="mob-menu" class="border-t-2 border-black bg-white md:hidden">
+    <div class="flex flex-col px-6 py-3 gap-0.5">
+      <a href="#stats"    class="mob-link text-xs font-bold uppercase tracking-wider py-2.5 border-b border-black/10 hover:pl-3 transition-all duration-150">The Stats</a>
+      <a href="#risks"    class="mob-link text-xs font-bold uppercase tracking-wider py-2.5 border-b border-black/10 hover:pl-3 transition-all duration-150">The Risks</a>
+      <a href="#warnings" class="mob-link text-xs font-bold uppercase tracking-wider py-2.5 border-b border-black/10 hover:pl-3 transition-all duration-150">Warning Signs</a>
+      <a href="#myths"    class="mob-link text-xs font-bold uppercase tracking-wider py-2.5 border-b border-black/10 hover:pl-3 transition-all duration-150">Myth vs. Reality</a>
+      <a href="#sayno"    class="mob-link text-xs font-bold uppercase tracking-wider py-2.5 border-b border-black/10 hover:pl-3 transition-all duration-150">Say No</a>
+      <a href="#help"     class="mob-link text-xs font-bold uppercase tracking-wider py-2.5 hover:pl-3 transition-all duration-150">Get Help</a>
+    </div>
+  </div>
+</nav>
+
+<div class="pt-14">
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section id="hero" class="relative min-h-screen flex flex-col items-center justify-center bg-white px-6 py-32 overflow-hidden" style="font-family:'Courier New',Courier,monospace;">
+  <div class="absolute inset-0 gridbg opacity-[0.04] pointer-events-none"></div>
+  <div class="absolute inset-6 border-2 border-dashed border-black/15 rounded pointer-events-none"></div>
+
+  <div class="relative z-10 text-center max-w-3xl w-full">
+    <div class="fade-up" style="animation-delay:.1s">
+      <div class="inline-flex items-center gap-2 border-2 border-black rounded px-4 py-1.5 mb-10">
+        <span class="text-xs font-black uppercase tracking-widest">✏ Health Canada Research · 2023–24</span>
+      </div>
+    </div>
+
+    <h1 class="fade-up text-5xl sm:text-6xl md:text-7xl font-black leading-[1.05] tracking-tight text-black mb-3" style="animation-delay:.25s">The Truth About</h1>
+    <h1 class="fade-up text-5xl sm:text-6xl md:text-7xl font-black leading-[1.05] tracking-tight mb-8" style="animation-delay:.4s; text-decoration:underline wavy 2px; text-underline-offset:6px;">Teen Substance Use</h1>
+
+    <p class="fade-up text-base sm:text-lg text-black/60 mb-14 leading-relaxed max-w-xl mx-auto" style="animation-delay:.55s">
+      Real facts. No lectures. Just stuff you should know to protect yourself and your friends.
+      <span class="text-xs text-black/40 mt-1 block">— Data sourced from Health Canada, CDC &amp; Kids Help Phone</span>
+    </p>
+
+    <div class="fade-up grid grid-cols-3 gap-4 sm:gap-6 max-w-xl mx-auto mb-14" style="animation-delay:.7s">
+      <div class="text-center border-2 border-black rounded px-3 py-5 bg-white card-lift" style="box-shadow:3px 3px 0 #000;">
+        <div class="text-2xl sm:text-3xl font-black text-black tracking-tight">1 in 10</div>
+        <div class="text-xs text-black/50 mt-1.5 leading-snug font-bold uppercase tracking-wide">teens have tried drugs</div>
+      </div>
+      <div class="text-center border-2 border-black rounded px-3 py-5 bg-white card-lift" style="box-shadow:3px 3px 0 #000;">
+        <div class="text-2xl sm:text-3xl font-black text-black tracking-tight" id="hero-pct1">0%</div>
+        <div class="text-xs text-black/50 mt-1.5 leading-snug font-bold uppercase tracking-wide">of students drank alcohol last month</div>
+      </div>
+      <div class="text-center border-2 border-black rounded px-3 py-5 bg-white card-lift" style="box-shadow:3px 3px 0 #000;">
+        <div class="text-2xl sm:text-3xl font-black text-black tracking-tight" id="hero-pct2">0%</div>
+        <div class="text-xs text-black/50 mt-1.5 leading-snug font-bold uppercase tracking-wide">of addictions start in teen years</div>
+      </div>
+    </div>
+
+    <a href="#stats" class="fade-up inline-flex items-center gap-2.5 bg-black text-white font-black text-sm uppercase tracking-widest px-8 py-4 rounded border-2 border-black hover:bg-white hover:text-black transition-all duration-200 relative overflow-hidden ripple-btn" style="animation-delay:.85s; box-shadow:4px 4px 0 rgba(0,0,0,.2);">
+      Start Reading
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+    </a>
+  </div>
+
+  <div class="absolute bottom-8 z-10 text-black/30 bounce2">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  </div>
+</section>
+
+<!-- ══════════════════ STATS ══════════════════ -->
+<section id="stats" class="bg-white py-24 px-6 border-t-2 border-black" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="mb-14 reveal">
+      <span class="text-xs font-black uppercase tracking-widest border-b-2 border-black pb-0.5">Section 01</span>
+      <h2 class="text-3xl sm:text-5xl font-black text-black tracking-tight mt-3 mb-4 leading-tight">The Stats 📊</h2>
+      <p class="text-black/60 text-base max-w-xl leading-relaxed">Here's what Health Canada found when they surveyed Canadian students in 2023–24.</p>
+    </div>
+
+    <!-- Animated Bar Chart -->
+    <div class="mb-14 border-2 border-black rounded p-6 sm:p-8 reveal" style="box-shadow:5px 5px 0 #000;" id="bar-wrap">
+      <div class="flex items-center gap-2 mb-6">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        <h3 class="font-black text-xs sm:text-sm uppercase tracking-widest">Substance Use Among Canadian Students — Past 30 Days</h3>
+      </div>
+      <div class="space-y-5">
+        <!-- row: label | track | pct -->
+        <div class="flex items-center gap-3 sm:gap-4 group">
+          <span class="text-xs font-black uppercase tracking-wider w-20 flex-shrink-0 text-right">Alcohol</span>
+          <div class="flex-1 bg-black/5 border border-black/20 rounded-sm h-8 relative overflow-hidden">
+            <div class="bar-fill absolute left-0 top-0 h-full bg-black hatch" style="--tw:88%;"></div>
+            <span class="absolute inset-0 flex items-center pl-3 text-white text-xs font-black opacity-0 transition-opacity duration-500 pct-label">22%</span>
+          </div>
+          <span class="text-sm font-black w-10 flex-shrink-0 bar-num opacity-0 transition-opacity duration-300">22%</span>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4 group">
+          <span class="text-xs font-black uppercase tracking-wider w-20 flex-shrink-0 text-right">Vaping</span>
+          <div class="flex-1 bg-black/5 border border-black/20 rounded-sm h-8 relative overflow-hidden">
+            <div class="bar-fill absolute left-0 top-0 h-full bg-black hatch" style="--tw:60%;"></div>
+            <span class="absolute inset-0 flex items-center pl-3 text-white text-xs font-black opacity-0 transition-opacity duration-500 pct-label">15%</span>
+          </div>
+          <span class="text-sm font-black w-10 flex-shrink-0 bar-num opacity-0 transition-opacity duration-300">15%</span>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4 group">
+          <span class="text-xs font-black uppercase tracking-wider w-20 flex-shrink-0 text-right">Cannabis</span>
+          <div class="flex-1 bg-black/5 border border-black/20 rounded-sm h-8 relative overflow-hidden">
+            <div class="bar-fill absolute left-0 top-0 h-full bg-black hatch" style="--tw:48%;"></div>
+            <span class="absolute inset-0 flex items-center pl-3 text-white text-xs font-black opacity-0 transition-opacity duration-500 pct-label">12%</span>
+          </div>
+          <span class="text-sm font-black w-10 flex-shrink-0 bar-num opacity-0 transition-opacity duration-300">12%</span>
+        </div>
+      </div>
+      <p class="text-xs text-black/40 mt-6 font-bold uppercase tracking-wider">Source: Health Canada — Canadian Student Tobacco, Alcohol and Drugs Survey 2023–2024</p>
+    </div>
+
+    <h3 class="font-black text-lg uppercase tracking-widest mb-6 border-b-2 border-black pb-3 reveal">Know What's Out There</h3>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger">
+      <div class="bg-white border-2 border-black rounded p-6 flex flex-col gap-4 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 border-2 border-black rounded flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/></svg>
+            </div>
+            <h3 class="text-sm font-black uppercase tracking-wide">Alcohol</h3>
+          </div>
+          <span class="text-[9px] font-black uppercase tracking-wider border border-black px-1.5 py-0.5 rounded text-black/60 flex-shrink-0">MOST COMMON</span>
+        </div>
+        <p class="text-black/70 text-sm leading-relaxed flex-1">The most used substance among Canadian students. It slows your brain, damages your liver, and leads to risky decisions.</p>
+        <div class="text-xs font-black border-l-4 border-black pl-3 text-black/70 leading-snug">22% of students used alcohol in the past 30 days</div>
+      </div>
+      <div class="bg-white border-2 border-black rounded p-6 flex flex-col gap-4 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 border-2 border-black rounded flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 12H3a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h14"/><path d="M18 8c0-2.5-2-2.5-2-5"/><path d="M21 16a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M22 8c0-2.5-2-2.5-2-5"/><path d="M7 12v4"/></svg>
+            </div>
+            <h3 class="text-sm font-black uppercase tracking-wide">Vaping / E-Cigs</h3>
+          </div>
+          <span class="text-[9px] font-black uppercase tracking-wider border border-black px-1.5 py-0.5 rounded text-black/60 flex-shrink-0">RISING FAST</span>
+        </div>
+        <p class="text-black/70 text-sm leading-relaxed flex-1">Often contains nicotine, which is extremely addictive and can harm the parts of your brain that control attention and learning.</p>
+        <div class="text-xs font-black border-l-4 border-black pl-3 text-black/70 leading-snug">15% of students vaped in the past 30 days</div>
+      </div>
+      <div class="bg-white border-2 border-black rounded p-6 flex flex-col gap-4 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 border-2 border-black rounded flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-4"/><path d="M7 12c-1.5 0-4.5 1.5-5 3 3.5 1.5 6 1 6 1-1.5 1.5-2 3.5-2 5 2.5 0 4.5-1.5 6-3 1.5 1.5 3.5 3 6 3 0-1.5-.5-3.5-2-5 0 0 2.5.5 6-1-.5-1.5-3.5-3-5-3 1.5-1 4-4 4-6-2.5 0-5.5 1.5-7 3 0-2.5-.5-5-2-7-1.5 2-2 4.5-2 7-1.5-1.5-4.5-3-7-3 0 2 2.5 5 4 6"/></svg>
+            </div>
+            <h3 class="text-sm font-black uppercase tracking-wide">Cannabis / Weed</h3>
+          </div>
+          <span class="text-[9px] font-black uppercase tracking-wider border border-black px-1.5 py-0.5 rounded text-black/60 flex-shrink-0">COMMON</span>
+        </div>
+        <p class="text-black/70 text-sm leading-relaxed flex-1">Regular use is linked to anxiety, memory problems, and dependency — especially when your brain is still developing.</p>
+        <div class="text-xs font-black border-l-4 border-black pl-3 text-black/70 leading-snug">12% of students used cannabis in the past 30 days</div>
+      </div>
+      <div class="bg-white border-2 border-black rounded p-6 flex flex-col gap-4 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 border-2 border-black rounded flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+            </div>
+            <h3 class="text-sm font-black uppercase tracking-wide">Prescription Drugs</h3>
+          </div>
+          <span class="text-[9px] font-black uppercase tracking-wider border border-black px-1.5 py-0.5 rounded text-black/60 flex-shrink-0">MISUNDERSTOOD</span>
+        </div>
+        <p class="text-black/70 text-sm leading-relaxed flex-1">Using someone else's medication (like ADHD pills or opioids) is dangerous and can lead to overdose or long-term health issues.</p>
+        <div class="text-xs font-black border-l-4 border-black pl-3 text-black/70 leading-snug">1 in 4 teens think prescription drugs are safer than street drugs — they're not</div>
+      </div>
+      <div class="bg-white border-2 border-black rounded p-6 flex flex-col gap-4 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 border-2 border-black rounded flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>
+            </div>
+            <h3 class="text-sm font-black uppercase tracking-wide">Fentanyl</h3>
+          </div>
+          <span class="text-[9px] font-black uppercase tracking-wider border border-black px-1.5 py-0.5 rounded text-black/60 flex-shrink-0">EXTREMELY DANGEROUS</span>
+        </div>
+        <p class="text-black/70 text-sm leading-relaxed flex-1">A deadly drug being hidden in fake pills. An amount the size of a grain of salt can kill. Never take a pill you didn't get from a pharmacy.</p>
+        <div class="text-xs font-black border-l-4 border-black pl-3 text-black/70 leading-snug">Leading cause of drug-related death in North America</div>
+      </div>
+      <div class="bg-white border-2 border-black rounded p-6 flex flex-col gap-4 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 border-2 border-black rounded flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+            </div>
+            <h3 class="text-sm font-black uppercase tracking-wide">Inhalants</h3>
+          </div>
+          <span class="text-[9px] font-black uppercase tracking-wider border border-black px-1.5 py-0.5 rounded text-black/60 flex-shrink-0">OFTEN OVERLOOKED</span>
+        </div>
+        <p class="text-black/70 text-sm leading-relaxed flex-1">Sniffing glue, aerosols, or markers can cause brain damage, hearing loss, or sudden death — even on the very first try.</p>
+        <div class="text-xs font-black border-l-4 border-black pl-3 text-black/70 leading-snug">Most commonly misused substance by 12-year-olds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ RISKS ══════════════════ -->
+<section id="risks" class="bg-black text-white py-24 px-6 border-t-2 border-black" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="text-xs font-black uppercase tracking-widest border-b-2 border-white/40 pb-0.5 text-white/70">Section 02</span>
+      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mt-3 mb-4 leading-tight">Signs &amp; Risks 🧠</h2>
+      <p class="text-white/50 text-base max-w-xl leading-relaxed">Your body and brain are still growing. That makes substances way more dangerous for you than for adults.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-6 mb-12 stagger">
+      <div class="border-2 border-white/30 rounded p-8 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="w-11 h-11 border-2 border-white/40 rounded flex items-center justify-center mb-5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
+        </div>
+        <h3 class="text-lg font-black text-white mb-2 uppercase tracking-tight">Your Brain Isn't Done Yet</h3>
+        <p class="text-white/60 text-sm leading-relaxed">Your brain is still developing until you're about 25. Substances can permanently change how it grows — affecting memory, learning, and decision-making.</p>
+      </div>
+      <div class="border-2 border-white/30 rounded p-8 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="w-11 h-11 border-2 border-white/40 rounded flex items-center justify-center mb-5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        </div>
+        <h3 class="text-lg font-black text-white mb-2 uppercase tracking-tight">Addiction Happens Fast</h3>
+        <p class="text-white/60 text-sm leading-relaxed">Teen brains get addicted way faster than adult brains. What starts as "just trying it once" can turn into a habit before you even realize it.</p>
+      </div>
+      <div class="border-2 border-white/30 rounded p-8 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="w-11 h-11 border-2 border-white/40 rounded flex items-center justify-center mb-5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+        <h3 class="text-lg font-black text-white mb-2 uppercase tracking-tight">Mental Health Takes a Hit</h3>
+        <p class="text-white/60 text-sm leading-relaxed">Regular cannabis use is linked to anxiety, depression, and memory problems in teens. Substances don't fix stress — they make it worse.</p>
+      </div>
+      <div class="border-2 border-white/30 rounded p-8 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="w-11 h-11 border-2 border-white/40 rounded flex items-center justify-center mb-5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        </div>
+        <h3 class="text-lg font-black text-white mb-2 uppercase tracking-tight">Risky Situations</h3>
+        <p class="text-white/60 text-sm leading-relaxed">Being under the influence makes you more likely to get into accidents, make unsafe choices, or be taken advantage of.</p>
+      </div>
+    </div>
+
+    <!-- Big animated counter -->
+    <div id="big-stat" class="border-2 border-white rounded p-10 text-center stripebg reveal">
+      <div class="text-7xl sm:text-9xl font-black text-white mb-3 tracking-tight" id="big-num">0%</div>
+      <p class="text-white/70 text-base max-w-md mx-auto leading-relaxed">of people who try an addictive substance before age <strong class="text-white">13</strong> develop a substance use disorder later in life.</p>
+      <p class="text-white/30 text-xs mt-4 uppercase tracking-widest font-bold">Source: SAMHSA</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ WARNINGS ══════════════════ -->
+<section id="warnings" class="bg-white py-24 px-6 border-t-2 border-black" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="text-xs font-black uppercase tracking-widest border-b-2 border-black pb-0.5">Section 02 cont.</span>
+      <h2 class="text-3xl sm:text-5xl font-black text-black tracking-tight mt-3 mb-4 leading-tight">Warning Signs ⚠️</h2>
+      <p class="text-black/60 text-base max-w-xl leading-relaxed">If you notice these in yourself or a friend, it might be time to talk to someone you trust.</p>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-6 stagger">
+      <div class="border-2 border-black rounded p-6 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <h3 class="font-black text-xs uppercase tracking-widest mb-5 pb-3 border-b-2 border-black">Behavioural</h3>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg></div><span class="text-sm text-black/80 leading-snug">Grades suddenly dropping</span></li>
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/></svg></div><span class="text-sm text-black/80 leading-snug">Sudden change in friend groups</span></li>
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="text-sm text-black/80 leading-snug">Pulling away from family</span></li>
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71"/></svg></div><span class="text-sm text-black/80 leading-snug">Loss of interest in hobbies</span></li>
+        </ul>
+      </div>
+      <div class="border-2 border-black rounded p-6 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <h3 class="font-black text-xs uppercase tracking-widest mb-5 pb-3 border-b-2 border-black">Physical</h3>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></div><span class="text-sm text-black/80 leading-snug">Bloodshot or glazed eyes</span></li>
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></div><span class="text-sm text-black/80 leading-snug">Changes in sleep or appetite</span></li>
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg></div><span class="text-sm text-black/80 leading-snug">Neglecting personal hygiene</span></li>
+        </ul>
+      </div>
+      <div class="border-2 border-black rounded p-6 card-lift" style="box-shadow:4px 4px 0 #000;">
+        <h3 class="font-black text-xs uppercase tracking-widest mb-5 pb-3 border-b-2 border-black">Emotional</h3>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg></div><span class="text-sm text-black/80 leading-snug">Unusual mood swings or anger</span></li>
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94"/></svg></div><span class="text-sm text-black/80 leading-snug">Increased secrecy</span></li>
+          <li class="flex items-start gap-3"><div class="w-7 h-7 border border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="text-sm text-black/80 leading-snug">Needing money with no explanation</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-10 border-l-4 border-black pl-6 py-2 reveal">
+      <p class="text-sm text-black/70 leading-relaxed"><strong class="font-black text-black">Remember:</strong> Noticing signs in a friend doesn't mean you're ratting them out — it means you care. Talking to a trusted adult could save their life.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ MYTHS ══════════════════ -->
+<section id="myths" class="bg-white py-24 px-6 border-t-2 border-black" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="text-xs font-black uppercase tracking-widest border-b-2 border-black pb-0.5">Bonus</span>
+      <h2 class="text-3xl sm:text-5xl font-black text-black tracking-tight mt-3 mb-4 leading-tight">Myth vs. Reality 💡</h2>
+      <p class="text-black/60 text-base max-w-xl leading-relaxed">Tap each myth to reveal the truth. These are the most common excuses people use.</p>
+    </div>
+    <div class="space-y-4 stagger">
+
+      <div class="myth-item border-2 border-black rounded overflow-hidden" style="box-shadow:4px 4px 0 #000;">
+        <button class="myth-btn w-full flex items-start gap-4 px-6 py-4 bg-black text-left cursor-pointer hover:bg-zinc-900 transition-colors">
+          <div class="w-7 h-7 border border-white/30 rounded flex items-center justify-center flex-shrink-0 mt-0.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+          <div class="flex-1 text-left"><span class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Myth</span><p class="text-white font-black text-base mt-0.5 leading-snug">"Everyone's doing it."</p></div>
+          <svg class="myth-chevron w-5 h-5 text-white/50 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="myth-body">
+          <div class="flex items-start gap-4 px-6 py-4 bg-white border-t-2 border-black">
+            <div class="w-7 h-7 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div><span class="text-[10px] font-black text-black/50 uppercase tracking-widest block">Reality</span><p class="text-black/80 text-sm mt-0.5 leading-relaxed">Actually, most Canadian teens DON'T use drugs or alcohol. The majority of students are substance-free. You're in good company if you say no.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="myth-item border-2 border-black rounded overflow-hidden" style="box-shadow:4px 4px 0 #000;">
+        <button class="myth-btn w-full flex items-start gap-4 px-6 py-4 bg-black text-left cursor-pointer hover:bg-zinc-900 transition-colors">
+          <div class="w-7 h-7 border border-white/30 rounded flex items-center justify-center flex-shrink-0 mt-0.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+          <div class="flex-1 text-left"><span class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Myth</span><p class="text-white font-black text-base mt-0.5 leading-snug">"I can stop whenever I want."</p></div>
+          <svg class="myth-chevron w-5 h-5 text-white/50 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="myth-body">
+          <div class="flex items-start gap-4 px-6 py-4 bg-white border-t-2 border-black">
+            <div class="w-7 h-7 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div><span class="text-[10px] font-black text-black/50 uppercase tracking-widest block">Reality</span><p class="text-black/80 text-sm mt-0.5 leading-relaxed">Addiction changes your brain chemistry. Teen brains are especially vulnerable — what feels like a free choice now can become something you can't control.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="myth-item border-2 border-black rounded overflow-hidden" style="box-shadow:4px 4px 0 #000;">
+        <button class="myth-btn w-full flex items-start gap-4 px-6 py-4 bg-black text-left cursor-pointer hover:bg-zinc-900 transition-colors">
+          <div class="w-7 h-7 border border-white/30 rounded flex items-center justify-center flex-shrink-0 mt-0.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+          <div class="flex-1 text-left"><span class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Myth</span><p class="text-white font-black text-base mt-0.5 leading-snug">"Weed is totally safe — it's natural."</p></div>
+          <svg class="myth-chevron w-5 h-5 text-white/50 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="myth-body">
+          <div class="flex items-start gap-4 px-6 py-4 bg-white border-t-2 border-black">
+            <div class="w-7 h-7 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div><span class="text-[10px] font-black text-black/50 uppercase tracking-widest block">Reality</span><p class="text-black/80 text-sm mt-0.5 leading-relaxed">"Natural" doesn't mean safe. Regular cannabis use is directly linked to anxiety, memory problems, and dependency in teens under 25.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="myth-item border-2 border-black rounded overflow-hidden" style="box-shadow:4px 4px 0 #000;">
+        <button class="myth-btn w-full flex items-start gap-4 px-6 py-4 bg-black text-left cursor-pointer hover:bg-zinc-900 transition-colors">
+          <div class="w-7 h-7 border border-white/30 rounded flex items-center justify-center flex-shrink-0 mt-0.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+          <div class="flex-1 text-left"><span class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Myth</span><p class="text-white font-black text-base mt-0.5 leading-snug">"Vaping is just water vapor."</p></div>
+          <svg class="myth-chevron w-5 h-5 text-white/50 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="myth-body">
+          <div class="flex items-start gap-4 px-6 py-4 bg-white border-t-2 border-black">
+            <div class="w-7 h-7 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div><span class="text-[10px] font-black text-black/50 uppercase tracking-widest block">Reality</span><p class="text-black/80 text-sm mt-0.5 leading-relaxed">Vape clouds contain nicotine, heavy metals, and chemicals that harm your lungs and brain. It's not steam — it's an aerosol full of harmful stuff.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="myth-item border-2 border-black rounded overflow-hidden" style="box-shadow:4px 4px 0 #000;">
+        <button class="myth-btn w-full flex items-start gap-4 px-6 py-4 bg-black text-left cursor-pointer hover:bg-zinc-900 transition-colors">
+          <div class="w-7 h-7 border border-white/30 rounded flex items-center justify-center flex-shrink-0 mt-0.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></div>
+          <div class="flex-1 text-left"><span class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Myth</span><p class="text-white font-black text-base mt-0.5 leading-snug">"It's just a pill — how bad can it be?"</p></div>
+          <svg class="myth-chevron w-5 h-5 text-white/50 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="myth-body">
+          <div class="flex items-start gap-4 px-6 py-4 bg-white border-t-2 border-black">
+            <div class="w-7 h-7 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div><span class="text-[10px] font-black text-black/50 uppercase tracking-widest block">Reality</span><p class="text-black/80 text-sm mt-0.5 leading-relaxed">Fake pills laced with fentanyl look identical to real ones. One pill can be lethal. You can never be sure what's actually in it.</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ SAY NO ══════════════════ -->
+<section id="sayno" class="bg-white py-24 px-6 border-t-2 border-black" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="text-xs font-black uppercase tracking-widest border-b-2 border-black pb-0.5">Section 03</span>
+      <h2 class="text-3xl sm:text-5xl font-black text-black tracking-tight mt-3 mb-4 leading-tight">Your Strategy for Success 💪</h2>
+      <p class="text-black/60 text-base max-w-xl leading-relaxed">Making healthy choices today protects your brain's development and keeps your future goals on track.</p>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-6 mb-14 stagger">
+      <div class="border-2 border-black rounded p-6 card-lift" style="box-shadow:4px 4px 0 #000;"><div class="w-11 h-11 border-2 border-black rounded flex items-center justify-center mb-4"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><h3 class="font-black text-sm uppercase tracking-wide mb-2">Set SMART Goals</h3><p class="text-black/60 text-sm leading-relaxed">Focus on your future — sports, grades, or personal projects keep you motivated and give you something to protect.</p></div>
+      <div class="border-2 border-black rounded p-6 card-lift" style="box-shadow:4px 4px 0 #000;"><div class="w-11 h-11 border-2 border-black rounded flex items-center justify-center mb-4"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg></div><h3 class="font-black text-sm uppercase tracking-wide mb-2">Manage Stress Differently</h3><p class="text-black/60 text-sm leading-relaxed">Instead of substances, try exercise, mindfulness, or talking to a friend. These actually work long-term.</p></div>
+      <div class="border-2 border-black rounded p-6 card-lift" style="box-shadow:4px 4px 0 #000;"><div class="w-11 h-11 border-2 border-black rounded flex items-center justify-center mb-4"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3 class="font-black text-sm uppercase tracking-wide mb-2">Pick Your People</h3><p class="text-black/60 text-sm leading-relaxed">Surround yourself with friends who respect your choice to stay substance-free. The right people won't pressure you.</p></div>
+    </div>
+    <div class="mb-6 reveal">
+      <h3 class="font-black text-lg uppercase tracking-widest mb-1">Ready-to-Go Responses</h3>
+      <p class="text-black/50 text-sm">Practice these until they feel natural.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-5 stagger">
+      <div class="border-2 border-black rounded p-5 flex items-start gap-4 card-lift" style="box-shadow:3px 3px 0 #000;"><div class="w-9 h-9 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><div><p class="text-black font-black text-sm leading-snug">"Nah, I'm good."</p><p class="text-black/50 text-xs mt-1 leading-relaxed">Short, simple, no explanation needed.</p></div></div>
+      <div class="border-2 border-black rounded p-5 flex items-start gap-4 card-lift" style="box-shadow:3px 3px 0 #000;"><div class="w-9 h-9 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><div><p class="text-black font-black text-sm leading-snug">"I have a big game tomorrow."</p><p class="text-black/50 text-xs mt-1 leading-relaxed">A solid excuse that's hard to argue with.</p></div></div>
+      <div class="border-2 border-black rounded p-5 flex items-start gap-4 card-lift" style="box-shadow:3px 3px 0 #000;"><div class="w-9 h-9 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><div><p class="text-black font-black text-sm leading-snug">"That stuff's not for me."</p><p class="text-black/50 text-xs mt-1 leading-relaxed">Confident and clear.</p></div></div>
+      <div class="border-2 border-black rounded p-5 flex items-start gap-4 card-lift" style="box-shadow:3px 3px 0 #000;"><div class="w-9 h-9 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><div><p class="text-black font-black text-sm leading-snug">"My parents would literally end me."</p><p class="text-black/50 text-xs mt-1 leading-relaxed">Blame the parents — classic and effective.</p></div></div>
+      <div class="border-2 border-black rounded p-5 flex items-start gap-4 card-lift" style="box-shadow:3px 3px 0 #000;"><div class="w-9 h-9 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><div><p class="text-black font-black text-sm leading-snug">"I'll stick with water/soda."</p><p class="text-black/50 text-xs mt-1 leading-relaxed">Just redirect to something else.</p></div></div>
+      <div class="border-2 border-black rounded p-5 flex items-start gap-4 card-lift" style="box-shadow:3px 3px 0 #000;"><div class="w-9 h-9 border-2 border-black rounded flex items-center justify-center flex-shrink-0 mt-0.5 bg-black/5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></div><div><p class="text-black font-black text-sm leading-snug">"I promised [someone] I wouldn't."</p><p class="text-black/50 text-xs mt-1 leading-relaxed">Hard for anyone to push past a promise.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ HELP ══════════════════ -->
+<section id="help" class="bg-black text-white py-24 px-6 border-t-2 border-black" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="text-xs font-black uppercase tracking-widest border-b-2 border-white/40 pb-0.5 text-white/50">Section 03 cont.</span>
+      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mt-3 mb-4 leading-tight">Need Help? You're Not Alone 🤝</h2>
+      <p class="text-white/50 text-base max-w-xl leading-relaxed">Asking for help is one of the bravest things you can do. These Canadian resources are free, confidential, and judgment-free.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-6 mb-12 stagger">
+      <div class="border-2 border-white/30 rounded p-8 flex flex-col gap-4 hover:border-white transition-all duration-200 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="flex items-center gap-3"><div class="w-11 h-11 border-2 border-white/30 rounded flex items-center justify-center flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><h3 class="text-white font-black text-sm uppercase tracking-wide">Kids Help Phone</h3><p class="text-white/40 text-xs mt-0.5">24/7 free &amp; confidential — for any issue, any time</p></div></div>
+        <div class="border-t border-white/10 pt-4 flex items-end justify-between gap-4"><div><p class="font-black text-white text-base">Call 1-800-668-6868</p><p class="text-white/50 text-xs mt-0.5">Text CONNECT to 686868</p></div><a href="tel:18006686868" class="ripple-btn inline-flex items-center gap-1.5 bg-white text-black text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded border-2 border-white hover:bg-black hover:text-white transition-all duration-150 flex-shrink-0">Call Now</a></div>
+      </div>
+      <div class="border-2 border-white/30 rounded p-8 flex flex-col gap-4 hover:border-white transition-all duration-200 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="flex items-center gap-3"><div class="w-11 h-11 border-2 border-white/30 rounded flex items-center justify-center flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></div><div><h3 class="text-white font-black text-sm uppercase tracking-wide">Foundry BC</h3><p class="text-white/40 text-xs mt-0.5">Free mental health &amp; substance use support for ages 12–24</p></div></div>
+        <div class="border-t border-white/10 pt-4 flex items-end justify-between gap-4"><div><p class="font-black text-white text-base">foundrybc.ca</p><p class="text-white/50 text-xs mt-0.5">Virtual &amp; in-person support</p></div><a href="https://foundrybc.ca" target="_blank" rel="noopener noreferrer" class="ripple-btn inline-flex items-center gap-1.5 bg-white text-black text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded border-2 border-white hover:bg-black hover:text-white transition-all duration-150 flex-shrink-0">Visit Site</a></div>
+      </div>
+      <div class="border-2 border-white/30 rounded p-8 flex flex-col gap-4 hover:border-white transition-all duration-200 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="flex items-center gap-3"><div class="w-11 h-11 border-2 border-white/30 rounded flex items-center justify-center flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><h3 class="text-white font-black text-sm uppercase tracking-wide">HealthLink BC</h3><p class="text-white/40 text-xs mt-0.5">Speak directly with a health navigator anytime</p></div></div>
+        <div class="border-t border-white/10 pt-4 flex items-end justify-between gap-4"><div><p class="font-black text-white text-base">Dial 8-1-1</p><p class="text-white/50 text-xs mt-0.5">Available 24/7</p></div><a href="tel:811" class="ripple-btn inline-flex items-center gap-1.5 bg-white text-black text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded border-2 border-white hover:bg-black hover:text-white transition-all duration-150 flex-shrink-0">Call 8-1-1</a></div>
+      </div>
+      <div class="border-2 border-white/30 rounded p-8 flex flex-col gap-4 hover:border-white transition-all duration-200 card-lift" style="box-shadow:4px 4px 0 rgba(255,255,255,.15);">
+        <div class="flex items-center gap-3"><div class="w-11 h-11 border-2 border-white/30 rounded flex items-center justify-center flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div><h3 class="text-white font-black text-sm uppercase tracking-wide">988 Crisis Lifeline</h3><p class="text-white/40 text-xs mt-0.5">Immediate support for mental health or substance crises</p></div></div>
+        <div class="border-t border-white/10 pt-4 flex items-end justify-between gap-4"><div><p class="font-black text-white text-base">Call or text 988</p><p class="text-white/50 text-xs mt-0.5">Available 24/7</p></div><a href="tel:988" class="ripple-btn inline-flex items-center gap-1.5 bg-white text-black text-xs font-black uppercase tracking-wider px-5 py-2.5 rounded border-2 border-white hover:bg-black hover:text-white transition-all duration-150 flex-shrink-0">Call 988</a></div>
+      </div>
+    </div>
+    <div class="border-2 border-white rounded p-10 text-center stripebg reveal">
+      <svg class="w-9 h-9 text-white mx-auto mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      <h3 class="text-2xl sm:text-3xl font-black text-white mb-3 tracking-tight uppercase">Talk to someone you trust</h3>
+      <p class="text-white/60 max-w-lg mx-auto leading-relaxed text-sm mb-8">A parent, teacher, school counselor, coach, or older sibling. You don't have to go through this alone. It's okay to not be okay — what matters is that you reach out.</p>
+      <a href="tel:18006686868" class="ripple-btn inline-flex items-center gap-2.5 bg-white text-black font-black text-sm uppercase tracking-widest px-8 py-4 rounded border-2 border-white hover:bg-black hover:text-white transition-all duration-200">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Call Kids Help Phone
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer class="bg-white border-t-2 border-black py-12 px-6 text-center" style="font-family:'Courier New',Courier,monospace;">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex items-center justify-center gap-2 mb-4 text-black/40">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/><path d="m15 5 3 3"/></svg>
+      <span class="text-xs font-black uppercase tracking-widest">Teen Drug Facts</span>
+    </div>
+    <p class="text-black/50 text-xs leading-relaxed mb-3">This infographic was created to educate and empower Grade 8 students.</p>
+    <p class="text-black/40 text-xs leading-relaxed"><strong class="text-black/60 font-black">Sources:</strong> Health Canada — Canadian Student Tobacco, Alcohol and Drugs Survey 2023–2024 · CDC · Kids Help Phone · SAMHSA</p>
+    <p class="text-black/30 text-xs mt-5 font-bold uppercase tracking-wider">Knowledge is power. Share this with a friend. ✏</p>
+  </div>
+</footer>
+
+</div>
+
+<!-- ════════════════ JAVASCRIPT ════════════════ -->
+<script>
+
+/* ── 1. MOBILE NAV ──────────────────────────────── */
+const hamburger = document.getElementById('hamburger');
+const mobMenu   = document.getElementById('mob-menu');
+const iconHam   = document.getElementById('icon-ham');
+const iconClose = document.getElementById('icon-close');
+let menuOpen = false;
+
+hamburger.addEventListener('click', () => {
+  menuOpen = !menuOpen;
+  mobMenu.classList.toggle('open', menuOpen);
+  iconHam.classList.toggle('hidden', menuOpen);
+  iconClose.classList.toggle('hidden', !menuOpen);
+});
+
+document.querySelectorAll('.mob-link').forEach(a => {
+  a.addEventListener('click', () => {
+    menuOpen = false;
+    mobMenu.classList.remove('open');
+    iconHam.classList.remove('hidden');
+    iconClose.classList.add('hidden');
+  });
+});
+
+/* ── 2. NAV SHADOW ON SCROLL ─────────────────── */
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').style.boxShadow =
+    window.scrollY > 10 ? '0 4px 24px rgba(0,0,0,0.13)' : 'none';
+}, { passive: true });
+
+/* ── 3. SMOOTH SCROLL (offset for fixed nav) ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    const el = document.querySelector(id);
+    if (!el) return;
+    e.preventDefault();
+    window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 58, behavior: 'smooth' });
+  });
+});
+
+/* ── 4. ACTIVE NAV LINK ───────────────────────── */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+const secObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(s => secObs.observe(s));
+
+/* ── 5. SCROLL REVEAL ─────────────────────────── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+document.querySelectorAll('.reveal, .stagger').forEach(el => io.observe(el));
+
+/* ── 6. ANIMATED BAR CHART ───────────────────── */
+let barsPlayed = false;
+const barObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !barsPlayed) {
+    barsPlayed = true;
+    document.querySelectorAll('.bar-fill').forEach((bar, i) => {
+      setTimeout(() => bar.classList.add('go'), i * 230);
+    });
+    document.querySelectorAll('.bar-num').forEach((n, i) => {
+      setTimeout(() => n.style.opacity = '1', i * 230 + 700);
+    });
+    document.querySelectorAll('.pct-label').forEach((n, i) => {
+      setTimeout(() => n.style.opacity = '1', i * 230 + 700);
+    });
+    barObs.disconnect();
+  }
+}, { threshold: 0.35 });
+const barWrap = document.getElementById('bar-wrap');
+if (barWrap) barObs.observe(barWrap);
+
+/* ── 7. BIG COUNTER (70%) ────────────────────── */
+let bigPlayed = false;
+function countUp(el, end, ms, suffix = '%') {
+  let v = 0;
+  const step = end / (ms / 16);
+  const t = setInterval(() => {
+    v = Math.min(v + step, end);
+    el.textContent = Math.floor(v) + suffix;
+    if (v >= end) clearInterval(t);
+  }, 16);
+}
+const bigObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !bigPlayed) {
+    bigPlayed = true;
+    countUp(document.getElementById('big-num'), 70, 1500);
+    bigObs.disconnect();
+  }
+}, { threshold: 0.4 });
+const bigStat = document.getElementById('big-stat');
+if (bigStat) bigObs.observe(bigStat);
+
+/* ── 8. HERO COUNTER CARDS ───────────────────── */
+let heroPlayed = false;
+const heroObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !heroPlayed) {
+    heroPlayed = true;
+    setTimeout(() => countUp(document.getElementById('hero-pct1'), 22, 900), 200);
+    setTimeout(() => countUp(document.getElementById('hero-pct2'), 90, 1100), 400);
+    heroObs.disconnect();
+  }
+}, { threshold: 0.3 });
+const heroEl = document.getElementById('hero');
+if (heroEl) heroObs.observe(heroEl);
+
+/* ── 9. MYTH ACCORDION ───────────────────────── */
+document.querySelectorAll('.myth-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item    = btn.closest('.myth-item');
+    const body    = item.querySelector('.myth-body');
+    const chev    = btn.querySelector('.myth-chevron');
+    const isOpen  = body.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.myth-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.myth-chevron').forEach(c => c.classList.remove('flip'));
+
+    if (!isOpen) {
+      body.classList.add('open');
+      chev.classList.add('flip');
+      // Scroll into view on mobile
+      setTimeout(() => item.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  });
+});
+
+/* ── 10. RIPPLE EFFECT ON BUTTONS ────────────── */
+document.querySelectorAll('.ripple-btn').forEach(btn => {
+  btn.style.position = 'relative';
+  btn.style.overflow = 'hidden';
+  btn.addEventListener('click', function(e) {
+    const r = this.getBoundingClientRect();
+    const d = document.createElement('span');
+    const size = Math.max(r.width, r.height) * 2;
+    d.style.cssText = `
+      position:absolute;border-radius:50%;background:rgba(255,255,255,0.35);
+      width:${size}px;height:${size}px;pointer-events:none;
+      left:${e.clientX - r.left - size/2}px;
+      top:${e.clientY - r.top - size/2}px;
+      transform:scale(0);animation:ripple 0.55s ease-out forwards;
+    `;
+    this.appendChild(d);
+    setTimeout(() => d.remove(), 600);
+  });
+});
+
+</script>
+</body>
+</html>
